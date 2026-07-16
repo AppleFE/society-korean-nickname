@@ -1,0 +1,14 @@
+* text=auto
+.gitattributes text eol=lf
+.gitignore text eol=lf
+gradlew text eol=lf
+*.txt text eol=lf
+*.mcmeta text eol=lf
+*.java text eol=lf
+*.gradle text eol=lf
+*.properties text eol=lf
+*.json text eol=lf
+*.toml text eol=lf
+*.bat text eol=crlf
+*.jar binary
+*.png binary

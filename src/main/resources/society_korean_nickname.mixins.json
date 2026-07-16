@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.applefe.koreannickname.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "society_korean_nickname.refmap.json",
+  "client": [
+    "PlayerTabOverlayMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

@@ -1,0 +1,15 @@
+Platform icon sources (retrieved 2026-07-16):
+
+CHZZK favicon:
+https://ssl.pstatic.net/static/nng/glive/icon/favicon.png
+Official site: https://chzzk.naver.com/
+
+YouTube favicon:
+https://www.youtube.com/s/desktop/0715bbf9/img/favicon_32x32.png
+Official site: https://www.youtube.com/
+
+CIME app icon:
+https://streaming.cf.ci.me/assets/service/favicon/CIME-apple-touch-icon-180.png
+Official site: https://ci.me/
+
+All names, logos, and trademarks belong to their respective owners. These assets are included solely to identify the platform selected by a player.
