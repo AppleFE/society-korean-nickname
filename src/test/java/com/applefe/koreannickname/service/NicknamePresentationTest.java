@@ -10,11 +10,14 @@ import org.junit.jupiter.api.Test;
 
 class NicknamePresentationTest {
     @Test
-    void buildsRequestedTabFormatWithPlatformMarker() {
+    void gradientsEntireTabNameFromLevelPrefixThroughNickname() {
         Component tabName = NicknamePresentation.tabName(new Profile("햇살농부", Platform.CIME), 23);
 
         assertEquals("Lv. 23 햇살농부", tabName.getString());
         assertEquals(Platform.CIME, Platform.fromTabName(tabName).orElseThrow());
+        assertEquals(11, tabName.getSiblings().size());
+        assertEquals(0x7B34F3, colorOf(tabName.getSiblings().get(0)));
+        assertEquals(0x9633F3, colorOf(tabName.getSiblings().get(10)));
     }
 
     @Test

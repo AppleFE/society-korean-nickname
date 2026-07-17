@@ -2,7 +2,6 @@ package com.applefe.koreannickname.service;
 
 import com.applefe.koreannickname.Platform;
 import com.applefe.koreannickname.data.NicknameSavedData.Profile;
-import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextColor;
@@ -23,17 +22,20 @@ public final class NicknamePresentation {
     }
 
     public static MutableComponent styledNickname(Profile profile) {
-        String nickname = profile.nickname();
-        int codePointCount = nickname.codePointCount(0, nickname.length());
+        return gradientText(profile.nickname(), profile.platform());
+    }
+
+    private static MutableComponent gradientText(String text, Platform platform) {
+        int codePointCount = text.codePointCount(0, text.length());
         MutableComponent result = Component.empty()
-                .withStyle(style -> style.withInsertion(profile.platform().marker()));
+                .withStyle(style -> style.withInsertion(platform.marker()));
 
         int codePointIndex = 0;
-        for (int offset = 0; offset < nickname.length(); ) {
-            int codePoint = nickname.codePointAt(offset);
+        for (int offset = 0; offset < text.length(); ) {
+            int codePoint = text.codePointAt(offset);
             int color = gradientColor(
-                    profile.platform().gradientStartColor(),
-                    profile.platform().gradientEndColor(),
+                    platform.gradientStartColor(),
+                    platform.gradientEndColor(),
                     codePointIndex,
                     codePointCount);
             result.append(Component.literal(new String(Character.toChars(codePoint)))
@@ -63,12 +65,7 @@ public final class NicknamePresentation {
     }
 
     public static MutableComponent tabName(Profile profile, int level) {
-        return Component.empty()
-                .withStyle(style -> style.withInsertion(profile.platform().marker()))
-                .append(Component.literal("Lv. ").withStyle(ChatFormatting.DARK_GRAY))
-                .append(Component.literal(Integer.toString(Math.max(0, level)))
-                        .withStyle(ChatFormatting.AQUA, ChatFormatting.BOLD))
-                .append(Component.literal(" "))
-                .append(styledNickname(profile));
+        String text = "Lv. " + Math.max(0, level) + " " + profile.nickname();
+        return gradientText(text, profile.platform());
     }
 }
