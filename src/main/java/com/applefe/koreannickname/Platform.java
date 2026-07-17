@@ -3,25 +3,26 @@ package com.applefe.koreannickname;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Optional;
-import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 
 /** Supported streaming platforms and their tab-list metadata. */
 public enum Platform {
-    CHZZK("chzzk", "치지직", ChatFormatting.GREEN),
-    YOUTUBE("youtube", "유튜브", ChatFormatting.RED),
-    CIME("cime", "씨미", ChatFormatting.LIGHT_PURPLE);
+    CHZZK("chzzk", "치지직", 0x00FFA3, 0x00B371),
+    YOUTUBE("youtube", "유튜브", 0xFF0033, 0xA90021),
+    CIME("cime", "씨미", 0x7B34F3, 0x9633F3);
 
     public static final String MARKER_PREFIX = "society-korean-nickname:";
 
     private final String id;
     private final String koreanName;
-    private final ChatFormatting color;
+    private final int gradientStartColor;
+    private final int gradientEndColor;
 
-    Platform(String id, String koreanName, ChatFormatting color) {
+    Platform(String id, String koreanName, int gradientStartColor, int gradientEndColor) {
         this.id = id;
         this.koreanName = koreanName;
-        this.color = color;
+        this.gradientStartColor = gradientStartColor;
+        this.gradientEndColor = gradientEndColor;
     }
 
     public String id() {
@@ -32,8 +33,12 @@ public enum Platform {
         return koreanName;
     }
 
-    public ChatFormatting color() {
-        return color;
+    public int gradientStartColor() {
+        return gradientStartColor;
+    }
+
+    public int gradientEndColor() {
+        return gradientEndColor;
     }
 
     public String marker() {

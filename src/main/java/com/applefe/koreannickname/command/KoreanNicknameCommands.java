@@ -25,23 +25,28 @@ public final class KoreanNicknameCommands {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("한글닉")
-                .then(Commands.argument("닉네임", StringArgumentType.string())
-                        .then(Commands.argument("플랫폼", StringArgumentType.word())
-                                .suggests(KoreanNicknameCommands::suggestPlatforms)
-                                .executes(KoreanNicknameCommands::setNickname))));
+                .then(Commands.argument("입력", StringArgumentType.greedyString())
+                        .suggests(KoreanNicknameCommands::suggestPlatforms)
+                        .executes(KoreanNicknameCommands::setNickname)));
     }
 
     private static int setNickname(CommandContext<CommandSourceStack> context)
             throws com.mojang.brigadier.exceptions.CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
-        NicknameValidator.Result nickname = NicknameValidator.validate(
-                StringArgumentType.getString(context, "닉네임"));
+        NicknameCommandInput.Result input = NicknameCommandInput.parse(
+                StringArgumentType.getString(context, "입력"));
+        if (!input.valid()) {
+            context.getSource().sendFailure(Component.literal(input.error()));
+            return 0;
+        }
+
+        NicknameValidator.Result nickname = NicknameValidator.validate(input.nickname());
         if (!nickname.valid()) {
             context.getSource().sendFailure(Component.literal(nickname.error()));
             return 0;
         }
 
-        Platform platform = Platform.parse(StringArgumentType.getString(context, "플랫폼")).orElse(null);
+        Platform platform = Platform.parse(input.platform()).orElse(null);
         if (platform == null) {
             context.getSource().sendFailure(Component.literal("플랫폼은 치지직, 유튜브, 씨미 중 하나여야 합니다."));
             return 0;
@@ -64,7 +69,15 @@ public final class KoreanNicknameCommands {
 
     private static CompletableFuture<Suggestions> suggestPlatforms(
             CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) {
+        int platformStart = NicknameCommandInput.trailingTokenStart(builder.getRemaining());
+        if (platformStart == 0) {
+            return builder.buildFuture();
+        }
+
+        SuggestionsBuilder platformBuilder = builder.createOffset(builder.getStart() + platformStart);
         return SharedSuggestionProvider.suggest(
-                Arrays.stream(Platform.values()).map(Platform::koreanName), builder);
+                Arrays.stream(Platform.values())
+                        .flatMap(platform -> java.util.stream.Stream.of(platform.koreanName(), platform.id())),
+                platformBuilder);
     }
 }

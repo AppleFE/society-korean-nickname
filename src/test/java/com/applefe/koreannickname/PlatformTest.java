@@ -16,6 +16,13 @@ class PlatformTest {
     }
 
     @Test
+    void exposesRequestedChatGradientColors() {
+        assertGradient(Platform.CIME, 0x7B34F3, 0x9633F3);
+        assertGradient(Platform.YOUTUBE, 0xFF0033, 0xA90021);
+        assertGradient(Platform.CHZZK, 0x00FFA3, 0x00B371);
+    }
+
+    @Test
     void findsMarkerInNestedTabComponent() {
         Component component = Component.empty()
                 .append(Component.literal("Lv. 7 "))
@@ -23,5 +30,9 @@ class PlatformTest {
                         .withStyle(style -> style.withInsertion(Platform.CHZZK.marker())));
 
         assertEquals(Platform.CHZZK, Platform.fromTabName(component).orElseThrow());
+    }
+    private static void assertGradient(Platform platform, int startColor, int endColor) {
+        assertEquals(startColor, platform.gradientStartColor());
+        assertEquals(endColor, platform.gradientEndColor());
     }
 }

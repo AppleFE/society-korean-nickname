@@ -18,10 +18,11 @@ public abstract class PlayerTabOverlayMixin {
     private void societyKoreanNickname$renderPlatformIcon(
             GuiGraphics graphics, int rowWidth, int rowX, int rowY, PlayerInfo playerInfo, CallbackInfo callback) {
         Platform.fromTabName(playerInfo.getTabListDisplayName()).ifPresent(platform -> {
+            int sourceSize = textureSize(platform);
             graphics.pose().pushPose();
             graphics.pose().translate(0.0F, 0.0F, 100.0F);
             graphics.blit(texture(platform), rowX + rowWidth - 10, rowY,
-                    0.0F, 0.0F, 8, 8, textureSize(platform), textureSize(platform));
+                    8, 8, 0.0F, 0.0F, sourceSize, sourceSize, sourceSize, sourceSize);
             graphics.pose().popPose();
             callback.cancel();
         });
