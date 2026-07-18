@@ -1,34 +1,25 @@
 package com.applefe.koreannickname.client;
 
-import com.applefe.koreannickname.Platform;
 import com.applefe.koreannickname.NicknameValidator;
-import com.applefe.koreannickname.SocietyKoreanNicknameMod;
+import com.applefe.koreannickname.Platform;
 import com.applefe.koreannickname.data.NicknameSavedData.Profile;
 import com.applefe.koreannickname.network.ModNetwork;
 import com.applefe.koreannickname.service.NicknamePresentation;
 import java.util.EnumMap;
 import java.util.Map;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 
-/** Client-side editor for a player's Korean nickname profile. */
-public final class NicknameScreen extends Screen {
+/** Client-side Stardew-inspired editor for a player's Korean nickname profile. */
+public final class NicknameScreen extends net.minecraft.client.gui.screens.Screen {
     private static final int PANEL_WIDTH = 330;
     private static final int PANEL_HEIGHT = 220;
-    private static final int PANEL_TEXTURE_WIDTH = 768;
-    private static final int PANEL_TEXTURE_HEIGHT = 512;
-    private static final ResourceLocation PANEL_TEXTURE = ResourceLocation.fromNamespaceAndPath(
-            SocietyKoreanNicknameMod.MOD_ID, "textures/gui/nickname_editor.png");
 
     private final String initialNickname;
-    private final Map<Platform, Button> platformButtons = new EnumMap<>(Platform.class);
+    private final Map<Platform, StardewButton> platformButtons = new EnumMap<>(Platform.class);
     private Platform selectedPlatform;
-    private EditBox nicknameField;
-    private Button saveButton;
+    private StardewEditBox nicknameField;
+    private StardewButton saveButton;
     private String statusMessage = "";
     private boolean statusIsError;
     private int panelLeft;
@@ -45,8 +36,9 @@ public final class NicknameScreen extends Screen {
         panelLeft = (width - PANEL_WIDTH) / 2;
         panelTop = (height - PANEL_HEIGHT) / 2;
 
-        nicknameField = addRenderableWidget(new EditBox(font, panelLeft + 24, panelTop + 67,
-                PANEL_WIDTH - 48, 20, Component.literal("닉네임")));
+        nicknameField = addRenderableWidget(new StardewEditBox(font,
+                panelLeft + 24, panelTop + 66, PANEL_WIDTH - 48, 28,
+                Component.literal("닉네임"), () -> selectedPlatform));
         nicknameField.setMaxLength(64);
         nicknameField.setValue(initialNickname);
         nicknameField.setResponder(value -> {
@@ -55,20 +47,22 @@ public final class NicknameScreen extends Screen {
         });
         setInitialFocus(nicknameField);
 
-        int buttonWidth = 88;
         int firstButtonX = panelLeft + 24;
-        int buttonY = panelTop + 121;
+        int buttonY = panelTop + 117;
         for (Platform platform : Platform.values()) {
-            int buttonX = firstButtonX + platform.ordinal() * (buttonWidth + 9);
-            Button button = addRenderableWidget(Button.builder(Component.literal(platform.koreanName()),
-                    clicked -> selectPlatform(platform)).bounds(buttonX, buttonY, buttonWidth, 20).build());
+            int buttonX = firstButtonX + platform.ordinal() * 98;
+            StardewButton button = addRenderableWidget(new StardewButton(
+                    buttonX, buttonY, 86, 24, Component.literal(platform.koreanName()),
+                    clicked -> selectPlatform(platform), StardewButton.Skin.PLATFORM));
             platformButtons.put(platform, button);
         }
 
-        saveButton = addRenderableWidget(Button.builder(Component.literal("저장"), clicked -> submit())
-                .bounds(panelLeft + 78, panelTop + 177, 82, 20).build());
-        addRenderableWidget(Button.builder(Component.literal("취소"), clicked -> onClose())
-                .bounds(panelLeft + 170, panelTop + 177, 82, 20).build());
+        saveButton = addRenderableWidget(new StardewButton(
+                panelLeft + 79, panelTop + 186, 82, 24, Component.literal("저장"),
+                clicked -> submit(), StardewButton.Skin.ACTION));
+        addRenderableWidget(new StardewButton(
+                panelLeft + 169, panelTop + 186, 82, 24, Component.literal("취소"),
+                clicked -> onClose(), StardewButton.Skin.ACTION));
         updatePlatformButtons();
         updateSaveButton();
     }
@@ -80,10 +74,8 @@ public final class NicknameScreen extends Screen {
     }
 
     private void updatePlatformButtons() {
-        for (Map.Entry<Platform, Button> entry : platformButtons.entrySet()) {
-            Platform platform = entry.getKey();
-            entry.getValue().setMessage(Component.literal((platform == selectedPlatform ? "✓ " : "")
-                    + platform.koreanName()));
+        for (Map.Entry<Platform, StardewButton> entry : platformButtons.entrySet()) {
+            entry.getValue().setSelected(entry.getKey() == selectedPlatform);
         }
     }
 
@@ -125,37 +117,46 @@ public final class NicknameScreen extends Screen {
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         renderBackground(graphics);
-        graphics.fill(panelLeft - 3, panelTop - 3, panelLeft + PANEL_WIDTH + 3, panelTop + PANEL_HEIGHT + 3,
-                0x90000000);
-        graphics.blit(PANEL_TEXTURE, panelLeft, panelTop, PANEL_WIDTH, PANEL_HEIGHT,
-                0.0F, 0.0F, PANEL_TEXTURE_WIDTH, PANEL_TEXTURE_HEIGHT,
-                PANEL_TEXTURE_WIDTH, PANEL_TEXTURE_HEIGHT);
+        graphics.fill(panelLeft - 4, panelTop - 4, panelLeft + PANEL_WIDTH + 4, panelTop + PANEL_HEIGHT + 5,
+                0x72000000);
+        drawSprite(graphics, NicknameUiTextures.PANEL, panelLeft, panelTop, PANEL_WIDTH, PANEL_HEIGHT);
+        drawSprite(graphics, NicknameUiTextures.PREVIEW,
+                panelLeft + 24, panelTop + 152, PANEL_WIDTH - 48, 26);
+        drawSprite(graphics, NicknameUiTextures.ICON_BADGE,
+                panelLeft + 27, panelTop + 153, 24, 24);
+        drawPlatformIcon(graphics, panelLeft + 31, panelTop + 157, 16);
 
-        graphics.drawCenteredString(font, title, panelLeft + PANEL_WIDTH / 2, panelTop + 18, 0xFFF4F5FF);
-        graphics.drawCenteredString(font, "표시할 닉네임과 플랫폼을 선택해 주세요.",
-                panelLeft + PANEL_WIDTH / 2, panelTop + 38, 0xFFB9BDD6);
-        graphics.drawString(font, "닉네임", panelLeft + 24, panelTop + 55, 0xFFD9DBEA, false);
-        graphics.drawString(font, "플랫폼", panelLeft + 24, panelTop + 108, 0xFFD9DBEA, false);
+        graphics.drawCenteredString(font, title, panelLeft + PANEL_WIDTH / 2, panelTop + 17, 0xFF5B351F);
+        String subtitle = statusMessage.isEmpty()
+                ? "표시할 닉네임과 플랫폼을 선택해 주세요."
+                : statusMessage;
+        int subtitleColor = statusMessage.isEmpty()
+                ? 0xFF805637
+                : statusIsError ? 0xFFB33A2D : 0xFF4F7B3E;
+        graphics.drawCenteredString(font, subtitle,
+                panelLeft + PANEL_WIDTH / 2, panelTop + 36, subtitleColor);
+        graphics.drawString(font, "닉네임", panelLeft + 24, panelTop + 51, 0xFF694127, false);
+        graphics.drawString(font, "플랫폼", panelLeft + 24, panelTop + 103, 0xFF694127, false);
 
-        int previewStart = 0xFF000000 | selectedPlatform.gradientStartColor();
-        int previewEnd = 0xFF000000 | selectedPlatform.gradientEndColor();
-        int previewLeft = panelLeft + 24;
-        int previewRight = panelLeft + PANEL_WIDTH - 24;
-        graphics.fill(previewLeft, panelTop + 151, previewRight, panelTop + 166, 0xFF10121A);
-        graphics.fill(previewLeft, panelTop + 151, previewLeft + 2, panelTop + 166, previewStart);
-        graphics.fill(previewRight - 2, panelTop + 151, previewRight, panelTop + 166, previewEnd);
         String previewNickname = nicknameField.getValue().strip();
         Component preview = NicknamePresentation.tabName(
                 new Profile(previewNickname.isEmpty() ? "닉네임" : previewNickname, selectedPlatform), 0);
-        graphics.drawCenteredString(font, preview, panelLeft + PANEL_WIDTH / 2, panelTop + 154,
-                0xFFFFFFFF);
+        graphics.drawCenteredString(font, preview,
+                panelLeft + PANEL_WIDTH / 2 + 8, panelTop + 160, 0xFFFFFFFF);
 
-        if (!statusMessage.isEmpty()) {
-            int statusColor = statusIsError ? 0xFFFF7777 : 0xFF91E3A0;
-            graphics.drawCenteredString(font, statusMessage, panelLeft + PANEL_WIDTH / 2, panelTop + 202,
-                    statusColor);
-        }
         super.render(graphics, mouseX, mouseY, partialTick);
+    }
+
+    private void drawPlatformIcon(GuiGraphics graphics, int x, int y, int size) {
+        int sourceSize = NicknameUiTextures.platformIconSize(selectedPlatform);
+        graphics.blit(NicknameUiTextures.platformIcon(selectedPlatform), x, y, size, size,
+                0.0F, 0.0F, sourceSize, sourceSize, sourceSize, sourceSize);
+    }
+
+    private static void drawSprite(GuiGraphics graphics, NicknameUiTextures.Sprite sprite,
+            int x, int y, int width, int height) {
+        graphics.blit(sprite.texture(), x, y, width, height,
+                0.0F, 0.0F, sprite.width(), sprite.height(), sprite.width(), sprite.height());
     }
 
     @Override

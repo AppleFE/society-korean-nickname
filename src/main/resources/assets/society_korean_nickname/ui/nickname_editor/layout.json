@@ -1,0 +1,264 @@
+{
+  "formatVersion": "web-mc-ui-assets/1",
+  "logicalSize": {
+    "width": 480,
+    "height": 270
+  },
+  "assetScale": 4,
+  "texture": {
+    "file": "atlas.png",
+    "width": 2048,
+    "height": 2048
+  },
+  "elements": [
+    {
+      "id": "nickname_panel",
+      "type": "panel",
+      "x": 75,
+      "y": 25,
+      "w": 330,
+      "h": 220,
+      "layer": 0,
+      "anchor": "top_left",
+      "nineSlice": [
+        24,
+        24,
+        24,
+        24
+      ],
+      "states": {
+        "normal": {
+          "sprite": "sprites/nickname_panel__normal.png",
+          "uv": {
+            "x": 3,
+            "y": 3,
+            "w": 1320,
+            "h": 880
+          }
+        }
+      }
+    },
+    {
+      "id": "nickname_input",
+      "type": "edit_box",
+      "x": 99,
+      "y": 91,
+      "w": 282,
+      "h": 28,
+      "layer": 0,
+      "anchor": "top_left",
+      "valueKey": "nickname",
+      "states": {
+        "normal": {
+          "sprite": "sprites/nickname_input__normal.png",
+          "uv": {
+            "x": 3,
+            "y": 889,
+            "w": 1128,
+            "h": 112
+          }
+        },
+        "focused": {
+          "sprite": "sprites/nickname_input__focused.png",
+          "uv": {
+            "x": 3,
+            "y": 1007,
+            "w": 1128,
+            "h": 112
+          }
+        },
+        "disabled": {
+          "sprite": "sprites/nickname_input__disabled.png",
+          "uv": {
+            "x": 3,
+            "y": 1125,
+            "w": 1128,
+            "h": 112
+          }
+        }
+      }
+    },
+    {
+      "id": "platform_button",
+      "type": "button",
+      "x": 99,
+      "y": 142,
+      "w": 86,
+      "h": 24,
+      "layer": 0,
+      "anchor": "top_left",
+      "action": "select_platform",
+      "states": {
+        "normal": {
+          "sprite": "sprites/platform_button__normal.png",
+          "uv": {
+            "x": 1137,
+            "y": 1243,
+            "w": 344,
+            "h": 96
+          }
+        },
+        "hover": {
+          "sprite": "sprites/platform_button__hover.png",
+          "uv": {
+            "x": 1487,
+            "y": 1243,
+            "w": 344,
+            "h": 96
+          }
+        },
+        "pressed": {
+          "sprite": "sprites/platform_button__pressed.png",
+          "uv": {
+            "x": 3,
+            "y": 1353,
+            "w": 344,
+            "h": 96
+          }
+        },
+        "disabled": {
+          "sprite": "sprites/platform_button__disabled.png",
+          "uv": {
+            "x": 353,
+            "y": 1353,
+            "w": 344,
+            "h": 96
+          }
+        },
+        "selected": {
+          "sprite": "sprites/platform_button__selected.png",
+          "uv": {
+            "x": 703,
+            "y": 1353,
+            "w": 344,
+            "h": 96
+          }
+        }
+      }
+    },
+    {
+      "id": "action_button",
+      "type": "button",
+      "x": 154,
+      "y": 211,
+      "w": 82,
+      "h": 24,
+      "layer": 0,
+      "anchor": "top_left",
+      "action": "submit",
+      "states": {
+        "normal": {
+          "sprite": "sprites/action_button__normal.png",
+          "uv": {
+            "x": 1053,
+            "y": 1353,
+            "w": 328,
+            "h": 96
+          }
+        },
+        "hover": {
+          "sprite": "sprites/action_button__hover.png",
+          "uv": {
+            "x": 1387,
+            "y": 1353,
+            "w": 328,
+            "h": 96
+          }
+        },
+        "pressed": {
+          "sprite": "sprites/action_button__pressed.png",
+          "uv": {
+            "x": 3,
+            "y": 1455,
+            "w": 328,
+            "h": 96
+          }
+        },
+        "disabled": {
+          "sprite": "sprites/action_button__disabled.png",
+          "uv": {
+            "x": 337,
+            "y": 1455,
+            "w": 328,
+            "h": 96
+          }
+        }
+      }
+    },
+    {
+      "id": "preview_panel",
+      "type": "panel",
+      "x": 99,
+      "y": 177,
+      "w": 282,
+      "h": 26,
+      "layer": 0,
+      "anchor": "top_left",
+      "states": {
+        "normal": {
+          "sprite": "sprites/preview_panel__normal.png",
+          "uv": {
+            "x": 3,
+            "y": 1243,
+            "w": 1128,
+            "h": 104
+          }
+        }
+      }
+    },
+    {
+      "id": "icon_badge",
+      "type": "icon",
+      "x": 102,
+      "y": 178,
+      "w": 24,
+      "h": 24,
+      "layer": 0,
+      "anchor": "top_left",
+      "states": {
+        "normal": {
+          "sprite": "sprites/icon_badge__normal.png",
+          "uv": {
+            "x": 671,
+            "y": 1455,
+            "w": 96,
+            "h": 96
+          }
+        }
+      }
+    },
+    {
+      "id": "title",
+      "type": "text",
+      "x": 160,
+      "y": 42,
+      "w": 160,
+      "h": 14,
+      "layer": 0,
+      "anchor": "top_left",
+      "textKey": "screen.nickname.title"
+    },
+    {
+      "id": "nickname_label",
+      "type": "text",
+      "x": 99,
+      "y": 75,
+      "w": 80,
+      "h": 10,
+      "layer": 0,
+      "anchor": "top_left",
+      "textKey": "screen.nickname.field"
+    },
+    {
+      "id": "platform_label",
+      "type": "text",
+      "x": 99,
+      "y": 128,
+      "w": 80,
+      "h": 10,
+      "layer": 0,
+      "anchor": "top_left",
+      "textKey": "screen.nickname.platform"
+    }
+  ]
+}

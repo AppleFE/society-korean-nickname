@@ -46,7 +46,7 @@ public final class NicknamePresentation {
         return result;
     }
 
-    static int gradientColor(int startColor, int endColor, int index, int count) {
+    public static int gradientColor(int startColor, int endColor, int index, int count) {
         if (count <= 1) {
             return startColor;
         }
