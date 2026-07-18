@@ -32,6 +32,7 @@ final class NicknameUiTextures {
             case CHZZK -> 512;
             case YOUTUBE -> 32;
             case CIME -> 180;
+            case SOOP -> 256;
         };
     }
 

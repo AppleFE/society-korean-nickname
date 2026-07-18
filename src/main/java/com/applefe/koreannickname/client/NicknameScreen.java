@@ -49,10 +49,12 @@ public final class NicknameScreen extends net.minecraft.client.gui.screens.Scree
 
         int firstButtonX = panelLeft + 24;
         int buttonY = panelTop + 117;
+        int buttonWidth = 66;
+        int buttonSpacing = 72;
         for (Platform platform : Platform.values()) {
-            int buttonX = firstButtonX + platform.ordinal() * 98;
+            int buttonX = firstButtonX + platform.ordinal() * buttonSpacing;
             StardewButton button = addRenderableWidget(new StardewButton(
-                    buttonX, buttonY, 86, 24, Component.literal(platform.koreanName()),
+                    buttonX, buttonY, buttonWidth, 24, Component.literal(platform.koreanName()),
                     clicked -> selectPlatform(platform), StardewButton.Skin.PLATFORM));
             platformButtons.put(platform, button);
         }

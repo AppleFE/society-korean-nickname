@@ -17,7 +17,7 @@ public final class NicknameService {
             return Result.failure(nickname.error());
         }
         if (platform == null) {
-            return Result.failure("플랫폼은 치지직, 유튜브, 씨미 중 하나여야 합니다.");
+            return Result.failure("플랫폼은 치지직, 유튜브, 씨미, 숲 중 하나여야 합니다.");
         }
 
         NicknameSavedData data = NicknameSavedData.get(player.server);

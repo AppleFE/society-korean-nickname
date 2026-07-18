@@ -12,6 +12,9 @@ class PlatformTest {
         assertEquals(Platform.CHZZK, Platform.parse("치지직").orElseThrow());
         assertEquals(Platform.YOUTUBE, Platform.parse("YOUTUBE").orElseThrow());
         assertEquals(Platform.CIME, Platform.parse("씨미").orElseThrow());
+        assertEquals(Platform.SOOP, Platform.parse("숲").orElseThrow());
+        assertEquals(Platform.SOOP, Platform.parse("SOOP").orElseThrow());
+        assertEquals(Platform.SOOP, Platform.parse("아프리카TV").orElseThrow());
         assertTrue(Platform.parse("트위치").isEmpty());
     }
 
@@ -20,6 +23,7 @@ class PlatformTest {
         assertGradient(Platform.CIME, 0x7B34F3, 0x9633F3);
         assertGradient(Platform.YOUTUBE, 0xFF0033, 0xA90021);
         assertGradient(Platform.CHZZK, 0x00FFA3, 0x00B371);
+        assertGradient(Platform.SOOP, 0x0545B1, 0x0545B1);
     }
 
     @Test

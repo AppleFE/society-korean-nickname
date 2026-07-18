@@ -12,4 +12,10 @@ CIME app icon:
 https://streaming.cf.ci.me/assets/service/favicon/CIME-apple-touch-icon-180.png
 Official site: https://ci.me/
 
+SOOP symbol:
+https://corp.sooplive.com/company.php?page=ci
+Official CI/BI asset:
+https://corp.sooplive.com/download/주식회사_숲_CI_BI_Asset.zip
+The included icon preserves the official #0545B1 symbol and adds transparent square padding only.
+
 All names, logos, and trademarks belong to their respective owners. These assets are included solely to identify the platform selected by a player.

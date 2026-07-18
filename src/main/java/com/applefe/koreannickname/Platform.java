@@ -9,7 +9,8 @@ import net.minecraft.network.chat.Component;
 public enum Platform {
     CHZZK("chzzk", "치지직", 0x00FFA3, 0x00B371),
     YOUTUBE("youtube", "유튜브", 0xFF0033, 0xA90021),
-    CIME("cime", "씨미", 0x7B34F3, 0x9633F3);
+    CIME("cime", "씨미", 0x7B34F3, 0x9633F3),
+    SOOP("soop", "숲", 0x0545B1, 0x0545B1);
 
     public static final String MARKER_PREFIX = "society-korean-nickname:";
 
@@ -50,6 +51,11 @@ public enum Platform {
             return Optional.empty();
         }
         String normalized = value.strip().toLowerCase(Locale.ROOT);
+        if (normalized.equals("afreecatv")
+                || normalized.equals("아프리카tv")
+                || normalized.equals("아프리카")) {
+            return Optional.of(SOOP);
+        }
         return Arrays.stream(values())
                 .filter(platform -> platform.id.equals(normalized) || platform.koreanName.equals(normalized))
                 .findFirst();
