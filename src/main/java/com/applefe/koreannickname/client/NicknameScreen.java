@@ -117,8 +117,6 @@ public final class NicknameScreen extends net.minecraft.client.gui.screens.Scree
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         renderBackground(graphics);
-        graphics.fill(panelLeft - 4, panelTop - 4, panelLeft + PANEL_WIDTH + 4, panelTop + PANEL_HEIGHT + 5,
-                0x72000000);
         drawSprite(graphics, NicknameUiTextures.PANEL, panelLeft, panelTop, PANEL_WIDTH, PANEL_HEIGHT);
         drawSprite(graphics, NicknameUiTextures.PREVIEW,
                 panelLeft + 24, panelTop + 152, PANEL_WIDTH - 48, 26);
