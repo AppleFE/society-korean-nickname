@@ -2,6 +2,7 @@ package com.applefe.koreannickname.client;
 
 import com.applefe.koreannickname.Platform;
 import com.applefe.koreannickname.NicknameValidator;
+import com.applefe.koreannickname.SocietyKoreanNicknameMod;
 import com.applefe.koreannickname.data.NicknameSavedData.Profile;
 import com.applefe.koreannickname.network.ModNetwork;
 import com.applefe.koreannickname.service.NicknamePresentation;
@@ -12,11 +13,16 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 
 /** Client-side editor for a player's Korean nickname profile. */
 public final class NicknameScreen extends Screen {
     private static final int PANEL_WIDTH = 330;
-    private static final int PANEL_HEIGHT = 218;
+    private static final int PANEL_HEIGHT = 220;
+    private static final int PANEL_TEXTURE_WIDTH = 768;
+    private static final int PANEL_TEXTURE_HEIGHT = 512;
+    private static final ResourceLocation PANEL_TEXTURE = ResourceLocation.fromNamespaceAndPath(
+            SocietyKoreanNicknameMod.MOD_ID, "textures/gui/nickname_editor.png");
 
     private final String initialNickname;
     private final Map<Platform, Button> platformButtons = new EnumMap<>(Platform.class);
@@ -121,8 +127,9 @@ public final class NicknameScreen extends Screen {
         renderBackground(graphics);
         graphics.fill(panelLeft - 3, panelTop - 3, panelLeft + PANEL_WIDTH + 3, panelTop + PANEL_HEIGHT + 3,
                 0x90000000);
-        graphics.fill(panelLeft, panelTop, panelLeft + PANEL_WIDTH, panelTop + PANEL_HEIGHT, 0xF01B1D29);
-        graphics.fill(panelLeft, panelTop, panelLeft + PANEL_WIDTH, panelTop + 2, 0xFF6E74A8);
+        graphics.blit(PANEL_TEXTURE, panelLeft, panelTop, PANEL_WIDTH, PANEL_HEIGHT,
+                0.0F, 0.0F, PANEL_TEXTURE_WIDTH, PANEL_TEXTURE_HEIGHT,
+                PANEL_TEXTURE_WIDTH, PANEL_TEXTURE_HEIGHT);
 
         graphics.drawCenteredString(font, title, panelLeft + PANEL_WIDTH / 2, panelTop + 18, 0xFFF4F5FF);
         graphics.drawCenteredString(font, "표시할 닉네임과 플랫폼을 선택해 주세요.",
