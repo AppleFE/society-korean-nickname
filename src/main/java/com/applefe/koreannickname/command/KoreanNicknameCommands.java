@@ -1,10 +1,10 @@
 package com.applefe.koreannickname.command;
 
-import com.applefe.koreannickname.NicknameValidator;
 import com.applefe.koreannickname.Platform;
 import com.applefe.koreannickname.data.NicknameSavedData;
 import com.applefe.koreannickname.data.NicknameSavedData.Profile;
-import com.applefe.koreannickname.service.NicknamePresentation;
+import com.applefe.koreannickname.network.ModNetwork;
+import com.applefe.koreannickname.service.NicknameService;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -15,19 +15,37 @@ import java.util.concurrent.CompletableFuture;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 
-/** Registers the self-service /한글닉 command. */
+/** Registers nickname editing and operator administration commands. */
 public final class KoreanNicknameCommands {
     private KoreanNicknameCommands() {
     }
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("한글닉")
+                .executes(KoreanNicknameCommands::openNicknameScreen)
+                .then(Commands.literal("강제")
+                        .requires(source -> source.hasPermission(2))
+                        .then(Commands.argument("플레이어", EntityArgument.player())
+                                .then(Commands.argument("입력", StringArgumentType.greedyString())
+                                        .suggests(KoreanNicknameCommands::suggestPlatforms)
+                                        .executes(KoreanNicknameCommands::forceNickname))))
                 .then(Commands.argument("입력", StringArgumentType.greedyString())
                         .suggests(KoreanNicknameCommands::suggestPlatforms)
                         .executes(KoreanNicknameCommands::setNickname)));
+    }
+
+    private static int openNicknameScreen(CommandContext<CommandSourceStack> context)
+            throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        ServerPlayer player = context.getSource().getPlayerOrException();
+        Profile currentProfile = NicknameSavedData.get(context.getSource().getServer())
+                .find(player.getUUID())
+                .orElse(new Profile("", Platform.CHZZK));
+        ModNetwork.openNicknameScreen(player, currentProfile.nickname(), currentProfile.platform());
+        return 1;
     }
 
     private static int setNickname(CommandContext<CommandSourceStack> context)
@@ -40,30 +58,37 @@ public final class KoreanNicknameCommands {
             return 0;
         }
 
-        NicknameValidator.Result nickname = NicknameValidator.validate(input.nickname());
-        if (!nickname.valid()) {
-            context.getSource().sendFailure(Component.literal(nickname.error()));
+        Platform platform = Platform.parse(input.platform()).orElse(null);
+        NicknameService.Result result = NicknameService.update(player, input.nickname(), platform);
+        if (!result.success()) {
+            context.getSource().sendFailure(Component.literal(result.message()));
+            return 0;
+        }
+
+        context.getSource().sendSuccess(() -> Component.literal(result.message()), false);
+        return 1;
+    }
+
+    private static int forceNickname(CommandContext<CommandSourceStack> context)
+            throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        ServerPlayer target = EntityArgument.getPlayer(context, "플레이어");
+        NicknameCommandInput.Result input = NicknameCommandInput.parse(
+                StringArgumentType.getString(context, "입력"));
+        if (!input.valid()) {
+            context.getSource().sendFailure(Component.literal(input.error()));
             return 0;
         }
 
         Platform platform = Platform.parse(input.platform()).orElse(null);
-        if (platform == null) {
-            context.getSource().sendFailure(Component.literal("플랫폼은 치지직, 유튜브, 씨미 중 하나여야 합니다."));
+        NicknameService.Result result = NicknameService.update(target, input.nickname(), platform);
+        if (!result.success()) {
+            context.getSource().sendFailure(Component.literal(result.message()));
             return 0;
         }
 
-        NicknameSavedData data = NicknameSavedData.get(context.getSource().getServer());
-        if (data.isNicknameUsedByOther(nickname.nickname(), player.getUUID())) {
-            context.getSource().sendFailure(Component.literal("이미 다른 플레이어가 사용 중인 닉네임입니다."));
-            return 0;
-        }
-
-        Profile profile = new Profile(nickname.nickname(), platform);
-        data.put(player.getUUID(), profile);
-        NicknamePresentation.apply(player, profile);
-        context.getSource().sendSuccess(() -> Component.literal("닉네임을 ")
-                .append(NicknamePresentation.styledNickname(profile))
-                .append(Component.literal("(으)로 변경했습니다. [" + platform.koreanName() + "]")), false);
+        target.sendSystemMessage(Component.literal("관리자가 " + result.message()));
+        context.getSource().sendSuccess(
+                () -> Component.literal(target.getGameProfile().getName() + "님의 " + result.message()), true);
         return 1;
     }
 

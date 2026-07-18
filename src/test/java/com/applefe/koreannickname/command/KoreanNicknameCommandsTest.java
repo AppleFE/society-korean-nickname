@@ -2,6 +2,7 @@ package com.applefe.koreannickname.command;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.mojang.brigadier.CommandDispatcher;
@@ -18,6 +19,17 @@ class KoreanNicknameCommandsTest {
 
         assertFullyParsed(dispatcher, "한글닉 햇살농부 치지직");
         assertFullyParsed(dispatcher, "한글닉 sunny youtube");
+    }
+
+    @Test
+    void registersUiEntryPointAndForcedNicknameBranch() {
+        CommandDispatcher<CommandSourceStack> dispatcher = new CommandDispatcher<>();
+        KoreanNicknameCommands.register(dispatcher);
+
+        var root = dispatcher.getRoot().getChild("한글닉");
+        assertNotNull(root);
+        assertNotNull(root.getCommand());
+        assertNotNull(root.getChild("강제"));
     }
 
     @Test
