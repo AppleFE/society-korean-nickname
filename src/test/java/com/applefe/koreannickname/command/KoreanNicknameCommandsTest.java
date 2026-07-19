@@ -3,6 +3,7 @@ package com.applefe.koreannickname.command;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.mojang.brigadier.CommandDispatcher;
@@ -39,27 +40,24 @@ class KoreanNicknameCommandsTest {
 
     @Test
     void splitsTheTrailingPlatformFromKoreanAndSpacedNicknames() {
-        NicknameCommandInput.Result korean = NicknameCommandInput.parse("햇살농부 치지직");
-        NicknameCommandInput.Result spaced = NicknameCommandInput.parse("햇살 농부 씨미");
-        NicknameCommandInput.Result quoted = NicknameCommandInput.parse("\"햇살 농부\" youtube");
+        String[] korean = KoreanNicknameCommands.parseNicknameInput("햇살농부 치지직");
+        String[] spaced = KoreanNicknameCommands.parseNicknameInput("햇살 농부 씨미");
+        String[] quoted = KoreanNicknameCommands.parseNicknameInput("\"햇살 농부\" youtube");
 
-        assertTrue(korean.valid());
-        assertEquals("햇살농부", korean.nickname());
-        assertEquals("치지직", korean.platform());
-        assertTrue(spaced.valid());
-        assertEquals("햇살 농부", spaced.nickname());
-        assertEquals("씨미", spaced.platform());
-        assertTrue(quoted.valid());
-        assertEquals("햇살 농부", quoted.nickname());
-        assertEquals("youtube", quoted.platform());
+        assertEquals("햇살농부", korean[0]);
+        assertEquals("치지직", korean[1]);
+        assertEquals("햇살 농부", spaced[0]);
+        assertEquals("씨미", spaced[1]);
+        assertEquals("햇살 농부", quoted[0]);
+        assertEquals("youtube", quoted[1]);
     }
 
     @Test
     void rejectsInputWithoutATrailingPlatform() {
-        NicknameCommandInput.Result result = NicknameCommandInput.parse("햇살농부");
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> KoreanNicknameCommands.parseNicknameInput("햇살농부"));
 
-        assertFalse(result.valid());
-        assertEquals(NicknameCommandInput.USAGE_ERROR, result.error());
+        assertEquals(KoreanNicknameCommands.USAGE_ERROR, exception.getMessage());
     }
 
     @Test

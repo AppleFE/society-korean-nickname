@@ -6,8 +6,10 @@ import com.applefe.koreannickname.data.NicknameSavedData.Profile;
 import com.applefe.koreannickname.network.ModNetwork;
 import com.applefe.koreannickname.service.NicknameService;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import java.util.Arrays;
@@ -21,6 +23,8 @@ import net.minecraft.server.level.ServerPlayer;
 
 /** Registers nickname editing and operator administration commands. */
 public final class KoreanNicknameCommands {
+    static final String USAGE_ERROR = "사용법: /한글닉 <닉네임> <플랫폼>";
+
     private KoreanNicknameCommands() {
     }
 
@@ -66,15 +70,13 @@ public final class KoreanNicknameCommands {
     private static int setNickname(CommandContext<CommandSourceStack> context)
             throws com.mojang.brigadier.exceptions.CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
-        NicknameCommandInput.Result input = NicknameCommandInput.parse(
-                StringArgumentType.getString(context, "입력"));
-        if (!input.valid()) {
-            context.getSource().sendFailure(Component.literal(input.error()));
+        String[] input = parseOrReport(context, StringArgumentType.getString(context, "입력"));
+        if (input == null) {
             return 0;
         }
 
-        Platform platform = Platform.parse(input.platform()).orElse(null);
-        NicknameService.Result result = NicknameService.update(player, input.nickname(), platform);
+        Platform platform = Platform.parse(input[1]).orElse(null);
+        NicknameService.Result result = NicknameService.update(player, input[0], platform);
         if (!result.success()) {
             context.getSource().sendFailure(Component.literal(result.message()));
             return 0;
@@ -87,15 +89,13 @@ public final class KoreanNicknameCommands {
     private static int forceNickname(CommandContext<CommandSourceStack> context)
             throws com.mojang.brigadier.exceptions.CommandSyntaxException {
         ServerPlayer target = EntityArgument.getPlayer(context, "플레이어");
-        NicknameCommandInput.Result input = NicknameCommandInput.parse(
-                StringArgumentType.getString(context, "입력"));
-        if (!input.valid()) {
-            context.getSource().sendFailure(Component.literal(input.error()));
+        String[] input = parseOrReport(context, StringArgumentType.getString(context, "입력"));
+        if (input == null) {
             return 0;
         }
 
-        Platform platform = Platform.parse(input.platform()).orElse(null);
-        NicknameService.Result result = NicknameService.update(target, input.nickname(), platform);
+        Platform platform = Platform.parse(input[1]).orElse(null);
+        NicknameService.Result result = NicknameService.update(target, input[0], platform);
         if (!result.success()) {
             context.getSource().sendFailure(Component.literal(result.message()));
             return 0;
@@ -109,7 +109,7 @@ public final class KoreanNicknameCommands {
 
     private static CompletableFuture<Suggestions> suggestPlatforms(
             CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) {
-        int platformStart = NicknameCommandInput.trailingTokenStart(builder.getRemaining());
+        int platformStart = trailingTokenStart(builder.getRemaining());
         if (platformStart == 0) {
             return builder.buildFuture();
         }
@@ -119,5 +119,60 @@ public final class KoreanNicknameCommands {
                 Arrays.stream(Platform.values())
                         .flatMap(platform -> java.util.stream.Stream.of(platform.koreanName(), platform.id())),
                 platformBuilder);
+    }
+
+    private static String[] parseOrReport(CommandContext<CommandSourceStack> context, String rawInput) {
+        try {
+            return parseNicknameInput(rawInput);
+        } catch (IllegalArgumentException exception) {
+            context.getSource().sendFailure(Component.literal(exception.getMessage()));
+            return null;
+        }
+    }
+
+    static String[] parseNicknameInput(String rawInput) {
+        String input = rawInput == null ? "" : rawInput.strip();
+        int platformStart = trailingTokenStart(input);
+        if (platformStart == 0) {
+            throw new IllegalArgumentException(USAGE_ERROR);
+        }
+
+        String nicknameExpression = input.substring(0, platformStart).strip();
+        String platform = input.substring(platformStart).strip();
+        if (nicknameExpression.isEmpty() || platform.isEmpty()) {
+            throw new IllegalArgumentException(USAGE_ERROR);
+        }
+
+        try {
+            return new String[] {parseNickname(nicknameExpression), platform};
+        } catch (CommandSyntaxException exception) {
+            throw new IllegalArgumentException("닉네임 따옴표를 올바르게 닫아 주세요.", exception);
+        }
+    }
+
+    static int trailingTokenStart(String input) {
+        int cursor = input.length();
+        while (cursor > 0) {
+            int codePoint = input.codePointBefore(cursor);
+            if (Character.isWhitespace(codePoint)) {
+                break;
+            }
+            cursor -= Character.charCount(codePoint);
+        }
+        return cursor;
+    }
+
+    private static String parseNickname(String expression) throws CommandSyntaxException {
+        if (!expression.startsWith("\"")) {
+            return expression;
+        }
+
+        StringReader reader = new StringReader(expression);
+        String nickname = reader.readQuotedString();
+        reader.skipWhitespace();
+        if (reader.canRead()) {
+            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedEndOfQuote().createWithContext(reader);
+        }
+        return nickname;
     }
 }

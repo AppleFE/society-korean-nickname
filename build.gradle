@@ -99,3 +99,31 @@ tasks.withType(JavaCompile).configureEach {
 tasks.named('test', Test).configure {
     useJUnitPlatform()
 }
+
+tasks.register('verifyJarContents') {
+    dependsOn tasks.named('reobfJar')
+
+    doLast {
+        def archive = tasks.named('jar').get().archiveFile.get().asFile
+        def expectedEntries = [] as Set
+        sourceSets.main.output.classesDirs.files.each { root ->
+            fileTree(root).matching { include '**/*.class' }.files.each { classFile ->
+                expectedEntries.add(root.toPath().relativize(classFile.toPath()).toString().replace('\\', '/'))
+            }
+        }
+
+        def zip = new java.util.zip.ZipFile(archive)
+        try {
+            def missingEntries = expectedEntries.findAll { zip.getEntry(it) == null }
+            if (!missingEntries.isEmpty()) {
+                throw new GradleException("Final mod JAR is missing compiled classes: ${missingEntries.sort()}")
+            }
+        } finally {
+            zip.close()
+        }
+    }
+}
+
+tasks.named('check').configure {
+    dependsOn tasks.named('verifyJarContents')
+}
