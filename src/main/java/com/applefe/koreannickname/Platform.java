@@ -10,7 +10,7 @@ public enum Platform {
     CHZZK("chzzk", "치지직", 0x00FFA3, 0x00B371),
     YOUTUBE("youtube", "유튜브", 0xFF0033, 0xA90021),
     CIME("cime", "씨미", 0x7B34F3, 0x9633F3),
-    SOOP("soop", "숲", 0x0545B1, 0x0545B1);
+    SOOP("soop", "숲", 0x34C8FF, 0x3B82F6);
 
     public static final String MARKER_PREFIX = "society-korean-nickname:";
 

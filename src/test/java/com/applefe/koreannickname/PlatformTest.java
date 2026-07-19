@@ -23,7 +23,7 @@ class PlatformTest {
         assertGradient(Platform.CIME, 0x7B34F3, 0x9633F3);
         assertGradient(Platform.YOUTUBE, 0xFF0033, 0xA90021);
         assertGradient(Platform.CHZZK, 0x00FFA3, 0x00B371);
-        assertGradient(Platform.SOOP, 0x0545B1, 0x0545B1);
+        assertGradient(Platform.SOOP, 0x34C8FF, 0x3B82F6);
     }
 
     @Test

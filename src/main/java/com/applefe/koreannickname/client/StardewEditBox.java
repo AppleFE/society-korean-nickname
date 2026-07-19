@@ -15,6 +15,7 @@ import net.minecraft.util.FormattedCharSequence;
 /** Edit box with Stardew-style chrome, a platform icon, and per-character gradient text. */
 final class StardewEditBox extends EditBox {
     private static final int ICON_SIZE = 16;
+    private static final int FONT_HEIGHT = 8;
 
     private final int backgroundX;
     private final int backgroundY;
@@ -24,7 +25,8 @@ final class StardewEditBox extends EditBox {
 
     StardewEditBox(Font font, int x, int y, int width, int height,
             Component narration, Supplier<Platform> platformSupplier) {
-        super(font, x + 32, y + 4, width - 40, height - 8, narration);
+        super(font, x + 32, y + (height - FONT_HEIGHT) / 2,
+                width - 40, FONT_HEIGHT, narration);
         this.backgroundX = x;
         this.backgroundY = y;
         this.backgroundWidth = width;
