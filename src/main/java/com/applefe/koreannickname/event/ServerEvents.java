@@ -64,15 +64,15 @@ public final class ServerEvents {
                 || player.tickCount % LEVEL_REFRESH_TICKS != 0) {
             return;
         }
-        if (profile(player).isEmpty()) {
+        java.util.Optional<Profile> profile = profile(player);
+        if (profile.isEmpty()) {
             return;
         }
 
         int level = SkillLevelService.highestLevel(player);
         int previous = player.getPersistentData().getInt(NicknamePresentation.LAST_LEVEL_KEY);
         if (level != previous) {
-            player.getPersistentData().putInt(NicknamePresentation.LAST_LEVEL_KEY, level);
-            player.refreshTabListName();
+            NicknamePresentation.apply(player, profile.orElseThrow(), level);
         }
     }
 

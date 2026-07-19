@@ -7,7 +7,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.server.level.ServerPlayer;
 
-/** Applies a stored profile and builds the synchronized tab-list component. */
+/** Applies a stored profile and builds synchronized player display components. */
 public final class NicknamePresentation {
     public static final String LAST_LEVEL_KEY = "societyKoreanNicknameLastLevel";
 
@@ -15,9 +15,14 @@ public final class NicknamePresentation {
     }
 
     public static void apply(ServerPlayer player, Profile profile) {
-        player.setCustomName(styledNickname(profile));
+        apply(player, profile, SkillLevelService.highestLevel(player));
+    }
+
+    public static void apply(ServerPlayer player, Profile profile, int level) {
+        int safeLevel = Math.max(0, level);
+        player.setCustomName(tabName(profile, safeLevel));
         player.refreshDisplayName();
-        player.getPersistentData().putInt(LAST_LEVEL_KEY, SkillLevelService.highestLevel(player));
+        player.getPersistentData().putInt(LAST_LEVEL_KEY, safeLevel);
         player.refreshTabListName();
     }
 

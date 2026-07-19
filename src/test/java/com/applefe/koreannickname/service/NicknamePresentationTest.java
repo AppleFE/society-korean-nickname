@@ -21,6 +21,16 @@ class NicknamePresentationTest {
     }
 
     @Test
+    void tabStyleIsSuitableForSynchronizedChatAndNameTagDisplay() {
+        Component displayName = NicknamePresentation.tabName(new Profile("광부", Platform.SOOP), 8);
+
+        assertEquals("Lv. 8 광부", displayName.getString());
+        assertEquals(Platform.SOOP, Platform.fromTabName(displayName).orElseThrow());
+        assertEquals(0x34C8FF, colorOf(displayName.getSiblings().get(0)));
+        assertEquals(0x3B82F6, colorOf(displayName.getSiblings().get(7)));
+    }
+
+    @Test
     void appliesEachPlatformGradientAcrossNickname() {
         for (Platform platform : Platform.values()) {
             Component nickname = NicknamePresentation.styledNickname(new Profile("가나다", platform));
