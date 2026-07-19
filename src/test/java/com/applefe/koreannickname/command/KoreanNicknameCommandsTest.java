@@ -29,7 +29,12 @@ class KoreanNicknameCommandsTest {
         var root = dispatcher.getRoot().getChild("한글닉");
         assertNotNull(root);
         assertNotNull(root.getCommand());
-        assertNotNull(root.getChild("강제"));
+        var force = root.getChild("강제");
+        assertNotNull(force);
+        var target = force.getChild("플레이어");
+        assertNotNull(target);
+        assertNotNull(target.getCommand());
+        assertNotNull(target.getChild("입력"));
     }
 
     @Test

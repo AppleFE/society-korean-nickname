@@ -30,6 +30,7 @@ public final class KoreanNicknameCommands {
                 .then(Commands.literal("강제")
                         .requires(source -> source.hasPermission(2))
                         .then(Commands.argument("플레이어", EntityArgument.player())
+                                .executes(KoreanNicknameCommands::openTargetNicknameScreen)
                                 .then(Commands.argument("입력", StringArgumentType.greedyString())
                                         .suggests(KoreanNicknameCommands::suggestPlatforms)
                                         .executes(KoreanNicknameCommands::forceNickname))))
@@ -41,11 +42,25 @@ public final class KoreanNicknameCommands {
     private static int openNicknameScreen(CommandContext<CommandSourceStack> context)
             throws com.mojang.brigadier.exceptions.CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
-        Profile currentProfile = NicknameSavedData.get(context.getSource().getServer())
+        openNicknameScreen(context.getSource(), player);
+        return 1;
+    }
+
+    private static int openTargetNicknameScreen(CommandContext<CommandSourceStack> context)
+            throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        ServerPlayer target = EntityArgument.getPlayer(context, "플레이어");
+        openNicknameScreen(context.getSource(), target);
+        context.getSource().sendSuccess(
+                () -> Component.literal(target.getGameProfile().getName() + "님에게 닉네임 설정 창을 열었습니다."),
+                true);
+        return 1;
+    }
+
+    private static void openNicknameScreen(CommandSourceStack source, ServerPlayer player) {
+        Profile currentProfile = NicknameSavedData.get(source.getServer())
                 .find(player.getUUID())
                 .orElse(new Profile("", Platform.CHZZK));
         ModNetwork.openNicknameScreen(player, currentProfile.nickname(), currentProfile.platform());
-        return 1;
     }
 
     private static int setNickname(CommandContext<CommandSourceStack> context)
