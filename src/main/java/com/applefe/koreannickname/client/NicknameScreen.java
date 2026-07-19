@@ -14,14 +14,14 @@ import net.minecraft.network.chat.Component;
 public final class NicknameScreen extends net.minecraft.client.gui.screens.Screen {
     private static final int PANEL_WIDTH = 330;
     private static final int PANEL_HEIGHT = 220;
-    private static final int LEGACY_PLATFORM_BUTTON_X = 24;
-    private static final int LEGACY_PLATFORM_BUTTON_Y = 117;
-    private static final int LEGACY_PLATFORM_BUTTON_WIDTH = 86;
-    private static final int LEGACY_PLATFORM_BUTTON_HEIGHT = 24;
-    private static final int CLEAN_PLATFORM_ROW_SOURCE_X = 880;
-    private static final int CLEAN_PLATFORM_ROW_SOURCE_Y = 468;
-    private static final int CLEAN_PLATFORM_ROW_SOURCE_WIDTH = 344;
-    private static final int CLEAN_PLATFORM_ROW_SOURCE_HEIGHT = 96;
+    private static final int LEGACY_BUTTON_GAP_X = 90;
+    private static final int LEGACY_BUTTON_GAP_Y = 117;
+    private static final int LEGACY_BUTTON_GAP_WIDTH = 6;
+    private static final int LEGACY_BUTTON_GAP_HEIGHT = 24;
+    private static final int CLEAN_GAP_SOURCE_X = 936;
+    private static final int CLEAN_GAP_SOURCE_Y = 468;
+    private static final int CLEAN_GAP_SOURCE_WIDTH = 24;
+    private static final int CLEAN_GAP_SOURCE_HEIGHT = 96;
 
     private final String initialNickname;
     private final Map<Platform, StardewButton> platformButtons = new EnumMap<>(Platform.class);
@@ -128,7 +128,7 @@ public final class NicknameScreen extends net.minecraft.client.gui.screens.Scree
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         renderBackground(graphics);
         drawSprite(graphics, NicknameUiTextures.PANEL, panelLeft, panelTop, PANEL_WIDTH, PANEL_HEIGHT);
-        coverLegacyPlatformButton(graphics);
+        coverLegacyPlatformButtonGap(graphics);
         drawSprite(graphics, NicknameUiTextures.PREVIEW,
                 panelLeft + 24, panelTop + 152, PANEL_WIDTH - 48, 26);
         drawSprite(graphics, NicknameUiTextures.ICON_BADGE,
@@ -156,21 +156,16 @@ public final class NicknameScreen extends net.minecraft.client.gui.screens.Scree
         super.render(graphics, mouseX, mouseY, partialTick);
     }
 
-    /** Covers the obsolete 86px button baked into the original panel artwork. */
-    private void coverLegacyPlatformButton(GuiGraphics graphics) {
+    /** Covers the exposed right edge of the obsolete 86px button baked into the panel. */
+    private void coverLegacyPlatformButtonGap(GuiGraphics graphics) {
         NicknameUiTextures.Sprite panel = NicknameUiTextures.PANEL;
-        graphics.pose().pushPose();
-        graphics.pose().translate(
-                panelLeft + LEGACY_PLATFORM_BUTTON_X + LEGACY_PLATFORM_BUTTON_WIDTH,
-                panelTop + LEGACY_PLATFORM_BUTTON_Y,
-                0.0F);
-        graphics.pose().scale(-1.0F, 1.0F, 1.0F);
-        graphics.blit(panel.texture(), 0, 0,
-                LEGACY_PLATFORM_BUTTON_WIDTH, LEGACY_PLATFORM_BUTTON_HEIGHT,
-                CLEAN_PLATFORM_ROW_SOURCE_X, CLEAN_PLATFORM_ROW_SOURCE_Y,
-                CLEAN_PLATFORM_ROW_SOURCE_WIDTH, CLEAN_PLATFORM_ROW_SOURCE_HEIGHT,
+        graphics.blit(panel.texture(),
+                panelLeft + LEGACY_BUTTON_GAP_X,
+                panelTop + LEGACY_BUTTON_GAP_Y,
+                LEGACY_BUTTON_GAP_WIDTH, LEGACY_BUTTON_GAP_HEIGHT,
+                CLEAN_GAP_SOURCE_X, CLEAN_GAP_SOURCE_Y,
+                CLEAN_GAP_SOURCE_WIDTH, CLEAN_GAP_SOURCE_HEIGHT,
                 panel.width(), panel.height());
-        graphics.pose().popPose();
     }
 
     private void drawPlatformIcon(GuiGraphics graphics, int x, int y, int size) {
