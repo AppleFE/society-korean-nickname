@@ -10,7 +10,8 @@ public enum Platform {
     CHZZK("chzzk", "치지직", 0x00FFA3, 0x00B371),
     YOUTUBE("youtube", "유튜브", 0xFF0033, 0xA90021),
     CIME("cime", "씨미", 0x7B34F3, 0x9633F3),
-    SOOP("soop", "숲", 0x34C8FF, 0x3B82F6);
+    SOOP("soop", "숲", 0x34C8FF, 0x3B82F6),
+    ADMIN("admin", "관리자", 0xF0F0F0, 0x979797);
 
     public static final String MARKER_PREFIX = "society-korean-nickname:";
 
@@ -44,6 +45,10 @@ public enum Platform {
 
     public String marker() {
         return MARKER_PREFIX + id;
+    }
+
+    public boolean isUserSelectable() {
+        return this != ADMIN;
     }
 
     public static Optional<Platform> parse(String value) {

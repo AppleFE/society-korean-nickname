@@ -36,7 +36,7 @@ public final class NicknameScreen extends net.minecraft.client.gui.screens.Scree
     public NicknameScreen(String nickname, Platform platform) {
         super(Component.literal("한글 닉네임 설정"));
         this.initialNickname = nickname == null ? "" : nickname;
-        this.selectedPlatform = platform == null ? Platform.CHZZK : platform;
+        this.selectedPlatform = platform == null || !platform.isUserSelectable() ? Platform.CHZZK : platform;
     }
 
     @Override
@@ -60,6 +60,9 @@ public final class NicknameScreen extends net.minecraft.client.gui.screens.Scree
         int buttonWidth = 66;
         int buttonSpacing = 72;
         for (Platform platform : Platform.values()) {
+            if (!platform.isUserSelectable()) {
+                continue;
+            }
             int buttonX = firstButtonX + platform.ordinal() * buttonSpacing;
             StardewButton button = addRenderableWidget(new StardewButton(
                     buttonX, buttonY, buttonWidth, 24, Component.literal(platform.koreanName()),

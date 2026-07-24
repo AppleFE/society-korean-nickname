@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.applefe.koreannickname.Platform;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonObject;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
@@ -58,6 +59,32 @@ class PlayerTabOverlayIconTest {
     }
 
     @Test
+    void replacesMinecraftDefaultFontWithDungGeunMoAndKeepsVanillaFallbacks() throws IOException {
+        String definitionPath = "/assets/minecraft/font/default.json";
+        try (InputStream stream = getClass().getResourceAsStream(definitionPath)) {
+            assertNotNull(stream, "누락된 기본 글꼴 정의");
+            JsonObject definition = JsonParser.parseReader(
+                    new InputStreamReader(stream, StandardCharsets.UTF_8)).getAsJsonObject();
+            var providers = definition.getAsJsonArray("providers");
+
+            assertEquals("ttf", providers.get(0).getAsJsonObject().get("type").getAsString());
+            assertEquals("society_korean_nickname:font/dunggeunmo.ttf",
+                    providers.get(0).getAsJsonObject().get("file").getAsString());
+            assertTrue(providers.size() > 1, "누락 글리프용 바닐라 대체 글꼴이 필요합니다.");
+        }
+
+        String fontPath = "/assets/society_korean_nickname/font/dunggeunmo.ttf";
+        try (InputStream stream = getClass().getResourceAsStream(fontPath)) {
+            assertNotNull(stream, "누락된 둥근모 TTF");
+            byte[] signature = stream.readNBytes(4);
+            assertEquals(0, signature[0]);
+            assertEquals(1, signature[1]);
+            assertEquals(0, signature[2]);
+            assertEquals(0, signature[3]);
+        }
+    }
+
+    @Test
     void keepsMixinStaticHelpersPrivate() throws NoSuchMethodException {
         int modifiers = PlayerTabOverlayMixin.class
                 .getDeclaredMethod("textureSize", Platform.class)
@@ -73,6 +100,7 @@ class PlayerTabOverlayIconTest {
             case YOUTUBE -> 32;
             case CIME -> 180;
             case SOOP -> 256;
+            case ADMIN -> 2048;
         };
     }
 

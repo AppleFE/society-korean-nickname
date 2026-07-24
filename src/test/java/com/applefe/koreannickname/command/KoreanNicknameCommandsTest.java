@@ -36,6 +36,12 @@ class KoreanNicknameCommandsTest {
         assertNotNull(target);
         assertNotNull(target.getCommand());
         assertNotNull(target.getChild("입력"));
+
+        var admin = dispatcher.getRoot().getChild("한글닉관리자");
+        assertNotNull(admin);
+        var adminTarget = admin.getChild("플레이어");
+        assertNotNull(adminTarget);
+        assertNotNull(adminTarget.getChild("닉네임"));
     }
 
     @Test

@@ -12,6 +12,17 @@ public final class NicknameService {
     }
 
     public static Result update(ServerPlayer player, String rawNickname, Platform platform) {
+        if (platform != null && !platform.isUserSelectable()) {
+            return Result.failure("선택할 수 없는 플랫폼입니다.");
+        }
+        return updateProfile(player, rawNickname, platform);
+    }
+
+    public static Result updateAdmin(ServerPlayer player, String rawNickname) {
+        return updateProfile(player, rawNickname, Platform.ADMIN);
+    }
+
+    private static Result updateProfile(ServerPlayer player, String rawNickname, Platform platform) {
         NicknameValidator.Result nickname = NicknameValidator.validate(rawNickname);
         if (!nickname.valid()) {
             return Result.failure(nickname.error());

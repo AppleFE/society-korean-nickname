@@ -24,6 +24,7 @@ class PlatformTest {
         assertGradient(Platform.YOUTUBE, 0xFF0033, 0xA90021);
         assertGradient(Platform.CHZZK, 0x00FFA3, 0x00B371);
         assertGradient(Platform.SOOP, 0x34C8FF, 0x3B82F6);
+        assertGradient(Platform.ADMIN, 0xF0F0F0, 0x979797);
     }
 
     @Test

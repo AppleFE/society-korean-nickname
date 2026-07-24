@@ -41,6 +41,11 @@ public final class KoreanNicknameCommands {
                 .then(Commands.argument("입력", StringArgumentType.greedyString())
                         .suggests(KoreanNicknameCommands::suggestPlatforms)
                         .executes(KoreanNicknameCommands::setNickname)));
+        dispatcher.register(Commands.literal("한글닉관리자")
+                .requires(source -> source.hasPermission(2))
+                .then(Commands.argument("플레이어", EntityArgument.player())
+                        .then(Commands.argument("닉네임", StringArgumentType.greedyString())
+                                .executes(KoreanNicknameCommands::setAdminNickname))));
     }
 
     private static int openNicknameScreen(CommandContext<CommandSourceStack> context)
@@ -107,6 +112,24 @@ public final class KoreanNicknameCommands {
         return 1;
     }
 
+    private static int setAdminNickname(CommandContext<CommandSourceStack> context)
+            throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        ServerPlayer target = EntityArgument.getPlayer(context, "플레이어");
+        String nickname = StringArgumentType.getString(context, "닉네임");
+        NicknameService.Result result = NicknameService.updateAdmin(target, nickname);
+        if (!result.success()) {
+            context.getSource().sendFailure(Component.literal(result.message()));
+            return 0;
+        }
+
+        target.sendSystemMessage(Component.literal("관리자가 " + result.message()));
+        context.getSource().sendSuccess(
+                () -> Component.literal(target.getGameProfile().getName()
+                        + "님을 관리자 닉네임으로 설정했습니다: " + nickname.strip()),
+                true);
+        return 1;
+    }
+
     private static CompletableFuture<Suggestions> suggestPlatforms(
             CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) {
         int platformStart = trailingTokenStart(builder.getRemaining());
@@ -117,6 +140,7 @@ public final class KoreanNicknameCommands {
         SuggestionsBuilder platformBuilder = builder.createOffset(builder.getStart() + platformStart);
         return SharedSuggestionProvider.suggest(
                 Arrays.stream(Platform.values())
+                        .filter(Platform::isUserSelectable)
                         .flatMap(platform -> java.util.stream.Stream.of(platform.koreanName(), platform.id())),
                 platformBuilder);
     }
